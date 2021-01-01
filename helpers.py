@@ -1,4 +1,9 @@
+import os
 import re
+import pickle
+
+if "data" not in os.listdir():
+    open("data", "ab").close()
 
 
 class State():
@@ -30,3 +35,50 @@ def format_dur(seconds):
     )
 
     return res if not res.startswith("00:") else res[3:]
+
+
+def get_banned_users():
+    f = open("data", "rb")
+    r = []
+    try:
+        up = pickle.load(f)
+        if "banned_users" in up:
+            r = up["banned_users"]
+        else:
+            r = []
+    except:
+        pass
+    f.close()
+    return r
+
+
+def ban_user(id, SUDO_USERS):
+    banned_users = get_banned_users()
+    if id in banned_users or id in SUDO_USERS:
+        return False
+    banned_users.append(id)
+    f = open("data", "wb")
+    pickle.dump(
+        {
+            "banned_users": banned_users
+        },
+        f
+    )
+    f.close()
+    return True
+
+
+def unban_user(id):
+    banned_users = get_banned_users()
+    if id not in banned_users:
+        return False
+    banned_users.remove(id)
+    f = open("data", "wb")
+    pickle.dump(
+        {
+            "banned_users": banned_users
+        },
+        f
+    )
+    f.close()
+    return True

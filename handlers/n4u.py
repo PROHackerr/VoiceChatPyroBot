@@ -1,7 +1,7 @@
 from asyncio import sleep
 from pyrogram import filters
 from pyrogram.handlers import MessageHandler
-from config import SUDO_FILTER
+from config import SUDO_FILTER, BANNED
 from strings import get_string as _
 
 
@@ -24,8 +24,15 @@ __handlers__ = [
             n4u,
             (filters.command("pause", "/")
              | filters.command("skip", "/")
-             | filters.command("stream", "/"))
+             | filters.command("resume", "/")
+             | filters.command("stream", "/")
+             | filters.command("bans", "/")
+             | filters.command("ban", "/")
+             | filters.command("unban", "/")
+             | filters.command("cleardownloads", "/")
+             | filters.command("play", "/"))
             & ~ SUDO_FILTER
+            & ~ BANNED
         )
     ]
 ]

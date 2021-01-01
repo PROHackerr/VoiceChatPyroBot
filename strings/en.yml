@@ -1,3 +1,25 @@
+# Help
+help_ban: "ban a user"
+help_unban: "unban a user"
+help_bans: "see banned users"
+help_cleardownloads: "delete all downloads"
+help_help: "see this list"
+help_pause: "pause the playing song"
+help_resume: "resume the paused song"
+help_play: "same as resume"
+help_queue: "check songs in the queue"
+help_skip: "skip the playing song"
+help_song: "check the playing song"
+help_start: "start the bot"
+help_stream: "stream a radio"
+help_tts: "say something"
+help_volume: "check the current volume"
+help_1: "User commands:"
+help_2: "Admin commands:"
+
+# Bot
+bot: "Bot is updating and restarting..."
+
 # Start
 start_1: "Hi, send me a YouTube link to play it."
 start_2: "Search"
@@ -6,6 +28,16 @@ start_2: "Search"
 inline_1: "Type a YouTube video title..."
 inline_2: "Duration: {0} Views: {1}"
 inline_3: "Search Timed out! Try again."
+
+# Ban
+ban_1: "Give me a user's ID."
+ban_2: "Done, the bot will no longer respond to this user."
+ban_3: "That didn't work, the user might be already banned or a sudo user."
+ban_4: "Oops, an error occured. See if you gave me a number."
+ban_5: "Unbanned, (s)he can use the bot now."
+ban_6: "That didn't work, the user might be not banned or a sudo user."
+ban_7: "No one is banned."
+ban_8: "Banned users:"
 
 # Message
 message_1: "This (link) is not valid."

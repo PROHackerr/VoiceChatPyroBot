@@ -3,7 +3,7 @@ import os
 from pyrogram import filters
 from pyrogram.handlers import MessageHandler
 import player
-from config import SUDO_FILTER
+from config import SUDO_FILTER, BANNED
 from strings import get_string as _
 
 
@@ -37,3 +37,6 @@ __handlers__ = [
         )
     ]
 ]
+__help__ = {
+    "cleardownloads": [_("help_cleardownloads"), True]
+}

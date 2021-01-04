@@ -34,7 +34,7 @@ def rm():
 
 def f10():
     first_10 = player.q_list[:10]
-    res = (_("listing") + "\n\n").format(
+    res = (_("queue_1") + "\n\n").format(
         len(first_10),
         len(player.q_list)
     )
@@ -42,13 +42,13 @@ def f10():
     if first_10:
         for i in range(len(first_10)):
             item = first_10[i]
-            res += _("list_item").format(
+            res += _("queue_2").format(
                 i + 1,
-                "<a href=\"{}\">{}</a> ({})".format(
+                "<a href=\"{}\">{}</a>".format(
                     item["url"],
-                    item["title"],
-                    item["dur"]
+                    item["title"]
                 ),
+                item["dur"],
                 "<a href=\"tg://user?id={}\">{}</a>".format(
                     item["sent_by_id"],
                     item["sent_by_name"]

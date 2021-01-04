@@ -22,10 +22,6 @@ def worker():
         try:
             item = q.get()
 
-            item["on_start"][0](
-                *item["on_start"][1]
-            )
-
             file_name = ""
 
             info = ydl.extract_info(
@@ -48,16 +44,17 @@ def worker():
             else:
                 file_name = info["id"] + "." + info["ext"]
 
-                if file_name in os.listdir("downloads"):
-                    args = item["play_func"][1]
-                    args[0] = "downloads/" + file_name
-                    args[3] = info["title"]
-                    args[4] = "https://youtu.be/" + info["id"]
-                    args[8] = format_dur(info["duration"])
-                    item["play_func"][0](
-                        *args
+                args = item["play_func"][1]
+                args[0] = "downloads/" + file_name
+                args[3] = info["title"]
+                args[4] = "https://youtu.be/" + info["id"]
+                args[8] = format_dur(
+                    info["duration"], item["s"], item["m"], item["h"], item["d"])
+
+                if file_name not in os.listdir("downloads"):
+                    item["on_start"][0](
+                        *item["on_start"][1]
                     )
-                else:
                     ydl.download(
                         [
                             item["video"]
@@ -71,15 +68,12 @@ def worker():
                         ][0],
                         "downloads/" + file_name
                     )
-                    args = item["play_func"][1]
-                    args[0] = "downloads/" + file_name
-                    args[3] = info["title"]
-                    args[4] = "https://youtu.be/" + info["id"]
-                    item["play_func"][0](
-                        *args
-                    )
 
-                if player.q.qsize() != 0:
+                item["play_func"][0](
+                    *args
+                )
+
+                if args[0] == "downloads/" + file_name:
                     item["on_end"][0](
                         *item["on_end"][1]
                     )
@@ -95,7 +89,7 @@ def worker():
 threading.Thread(target=worker, daemon=True).start()
 
 
-def download(on_start, on_end, play_func, on_is_live_err, video, on_err, on_dur_limit):
+def download(on_start, on_end, play_func, on_is_live_err, video, on_err, on_dur_limit, s, m, h, d):
     q.put(
         {
             "on_start": on_start,
@@ -104,7 +98,11 @@ def download(on_start, on_end, play_func, on_is_live_err, video, on_err, on_dur_
             "on_is_live_err": on_is_live_err,
             "video": video,
             "on_err": on_err,
-            "on_dur_limit": on_dur_limit
+            "on_dur_limit": on_dur_limit,
+            "s": s,
+            "m": m,
+            "h": h,
+            "d": d
         }
     )
     return q.qsize()

@@ -15,26 +15,31 @@ class State():
 
 
 def is_youtube(url):
-    exp1 = r"(http|https)\:\/\/(www\.|)youtu\.be\/.+"
-    exp2 = r"(http|https)\:\/\/(www\.|)youtube\.com\/watch.+"
+    exp1 = r"(http|https)\:\/\/((www|m)\.|)youtu\.be\/.+"
+    exp2 = r"(http|https)\:\/\/((www|m)\.|)youtube\.com\/watch.+"
     match = bool(re.match(exp1, url)) or bool(re.match(exp2, url))
     return match
 
 
-def format_dur(seconds):
-    seconds = seconds % (24 * 3600)
-    hour = seconds // 3600
-    seconds %= 3600
-    minutes = seconds // 60
-    seconds %= 60
-
-    res = "{}:{}:{}".format(
-        hour if len(str(hour)) != 1 else "0" + str(hour),
-        minutes if len(str(minutes)) != 1 else "0" + str(minutes),
-        seconds if len(str(seconds)) != 1 else "0" + str(seconds)
-    )
-
-    return res if not res.startswith("00:") else res[3:]
+def format_dur(seconds: int, s: str, m: str, h: str, d: str) -> str:
+    """Inputs time in seconds, to get beautified time,
+    as string"""
+    result = ""
+    v_m = 0
+    remainder = seconds
+    r_ange_s = {
+        d: (24 * 60 * 60),
+        h: (60 * 60),
+        m: 60,
+        s: 1
+    }
+    for age in r_ange_s:
+        divisor = r_ange_s[age]
+        v_m, remainder = divmod(remainder, divisor)
+        v_m = int(v_m)
+        if v_m != 0:
+            result += f" {v_m} {age} "
+    return result.strip().rstrip()
 
 
 def get_banned_users():

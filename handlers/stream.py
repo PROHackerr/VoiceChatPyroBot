@@ -1,4 +1,4 @@
-from asyncio import sleep
+from time import sleep
 from pyrogram import filters
 from pyrogram.handlers import MessageHandler
 import player
@@ -7,20 +7,22 @@ from config import SUDO_FILTER, LOG_GROUP
 from strings import get_string as _
 
 
-async def stream(client, message):
+def stream(client, message):
+    m = None
+
     if player.STATE in (State.Playing, State.Paused):
-        m = await message.reply_text(
+        m = message.reply_text(
             _("stream_3")
         )
     else:
         args = message.text.split()
 
         if len(args) == 1:
-            m = await message.reply_text(
+            m = message.reply_text(
                 _("stream_1")
             )
         elif len(args) != 2:
-            m = await message.reply_text(
+            m = message.reply_text(
                 _("stream_2")
             )
         else:
@@ -37,18 +39,19 @@ async def stream(client, message):
                 ] if LOG_GROUP else None
             )
 
-            await message.reply_text(
+            message.reply_text(
                 _("stream_4")
             )
 
     if m and message.chat.type != "private":
-        await sleep(5)
-        await m.delete()
+        sleep(5)
+        m.delete()
 
         try:
-            await message.delete()
+            message.delete()
         except:
             pass
+
 
 __handlers__ = [
     [

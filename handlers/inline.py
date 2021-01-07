@@ -2,16 +2,17 @@ from pyrogram.handlers import InlineQueryHandler
 from youtubesearchpython import VideosSearch
 from pyrogram.types import InlineQueryResultArticle, InputTextMessageContent
 from pyrogram import errors
-from config import BANNED
+from helpers import wrap
 from strings import get_string as _
 
 
-async def search(client, query):
+@wrap
+def search(client, query):
     answers = []
     string = query.query.lower().strip().rstrip()
 
     if string == "":
-        await client.answer_inline_query(
+        client.answer_inline_query(
             query.id,
             results=answers,
             switch_pm_text=_("inline_1"),
@@ -38,23 +39,23 @@ async def search(client, query):
                 )
             )
         try:
-            await query.answer(
+            query.answer(
                 results=answers,
                 cache_time=0
             )
         except errors.QueryIdInvalid:
-            await query.answer(
+            query.answer(
                 results=answers,
                 cache_time=0,
                 switch_pm_text=_("inline_3"),
                 switch_pm_parameter="",
             )
 
+
 __handlers__ = [
     [
         InlineQueryHandler(
-            search,
-            ~ BANNED
+            search
         )
     ]
 ]

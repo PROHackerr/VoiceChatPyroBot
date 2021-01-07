@@ -1,32 +1,37 @@
-from asyncio import sleep
+from time import sleep
 import os
 from pyrogram import filters
 from pyrogram.handlers import MessageHandler
 import player
-from config import SUDO_FILTER, BANNED
+from config import SUDO_FILTER
 from strings import get_string as _
 
 
-async def clear_downloads(client, message):
-    player.abort()
+def clear_downloads(client, message):
+    for i in range(len(player.q_list)):
+        player.abort(False)
+        sleep(0.5)
+
     try:
         for file in os.listdir("downloads"):
             try:
                 os.remove("downloads/" + file)
             except:
                 pass
-        m = await message.reply_text(_("cleardownloads"))
+
+        m = message.reply_text(_("cleardownloads"))
     except:
-        m = await message.reply_text(_("error"))
+        m = message.reply_text(_("error"))
 
     if m and message.chat.type != "private":
-        await sleep(5)
-        await m.delete()
+        sleep(5)
+        m.delete()
 
         try:
-            await message.delete()
+            message.delete()
         except:
             pass
+
 
 __handlers__ = [
     [

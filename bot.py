@@ -8,7 +8,8 @@ if __name__ == "__main__":
     import os
     import sys
     from threading import Thread
-    from pyrogram import filters
+    from pyrogram import idle, filters
+    from pyrogram.handlers import MessageHandler
     import player
     from handlers import all_handlers
     from config import SUDO_FILTER
@@ -27,11 +28,12 @@ if __name__ == "__main__":
         os.system("git pull")
         os.execl(sys.executable, sys.executable, *sys.argv)
 
-    @app.on_message(filters.command("r") & SUDO_FILTER)
-    async def restart(client, message):
-        await message.reply_text(_("bot"))
+    @app.on_message(filters.command("r", "/") & SUDO_FILTER)
+    def restart(client, message):
+        message.reply_text(_("bot"))
         Thread(
             target=stop_and_restart
         ).start()
 
-    app.run()
+    app.start()
+    idle()

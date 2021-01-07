@@ -1,7 +1,9 @@
+import os
 import threading
 import queue
 from subprocess import Popen, PIPE
 from helpers import State
+from config import REMOVE_AFTER_PLAYING
 
 q = queue.Queue()
 q_list = []
@@ -26,14 +28,14 @@ def worker():
             process = Popen(["mplayer",
                              item["stream_url"]], stdin=PIPE)
             process.wait()
-        else:
-            STATE = State.Playing
-            item["on_start"][0](
-                *item["on_start"][1],
-                quote=True
-            )
+        elif q_list[0] == item:
+            if STATE != State.NoNotifications:
+                item["on_start"][0](
+                    *item["on_start"][1],
+                    quote=True
+                )
 
-            if "log" in item:
+            if "log" in item and STATE != State.NoNotifications:
                 if item["log"]:
                     args = item["log"][1]
                     args[1] = args[1].format(
@@ -46,6 +48,8 @@ def worker():
                     log = item["log"][0](
                         *args
                     )
+
+            STATE = State.Playing
 
             process = Popen(
                 ["mplayer", item["file"]], stdin=PIPE)
@@ -62,15 +66,22 @@ def worker():
                     quote=True
                 )
 
+            if REMOVE_AFTER_PLAYING:
+                if q_list[0]["file"] != item["file"] and q_list[1]["file"] != item["file"]:
+                    os.remove(item["file"])
+
             if q_list:
                 if q_list[0] == item:
                     del q_list[0]
         if log:
             log.delete()
 
-        STATE = State.NothingSpecial
+        if STATE != State.NoNotifications:
+            STATE = State.NothingSpecial
         process = None
+
         if q:
+
             q.task_done()
 
 
@@ -113,10 +124,18 @@ def currently_playing():
     return q_list[0] if q_list else []
 
 
-def abort():
+def abort(send_message=True):
+    global STATE
+
     if process:
+        if not send_message:
+            STATE = State.NoNotifications
+
         process.terminate()
-        del q_list[0]
+
+        if q_list:
+            del q_list[0]
+
         return True
     return False
 

@@ -1,19 +1,21 @@
-from asyncio import sleep
+from time import sleep
 from pyrogram import filters
 from pyrogram.handlers import MessageHandler
-from config import SUDO_FILTER, BANNED
+from helpers import wrap
+from config import SUDO_FILTER
 from strings import get_string as _
 
 
-async def n4u(client, message):
-    m = await message.reply_text(_("n4u"))
+@wrap
+def n4u(client, message):
+    m = message.reply_text(_("n4u"))
 
     if m and message.chat.type != "private":
-        await sleep(5)
-        await m.delete()
+        sleep(5)
+        m.delete()
 
         try:
-            await message.delete()
+            message.delete()
         except:
             pass
 
@@ -33,7 +35,6 @@ __handlers__ = [
              | filters.command("play", "/")
              | filters.command("r", "/"))
             & ~ SUDO_FILTER
-            & ~ BANNED
         )
     ]
 ]

@@ -7,7 +7,7 @@ import threading
 import queue
 import youtube_dl
 import player
-from config import DUR_LIMIT
+from config import DUR_LIMIT, SUDO_USERS
 from helpers import format_dur
 
 ydl_opts = {
@@ -29,7 +29,7 @@ def worker():
                 download=False
             )
 
-            if int(info["duration"] / 60) > DUR_LIMIT:
+            if int(info["duration"] / 60) > DUR_LIMIT and item["play_func"][5] not in SUDO_USERS:
                 args = item["on_dur_limit"][1]
                 args[0] = args[0].format(DUR_LIMIT)
                 item["on_dur_limit"][0](
@@ -49,7 +49,7 @@ def worker():
                 args[3] = info["title"]
                 args[4] = "https://youtu.be/" + info["id"]
                 args[8] = format_dur(
-                    info["duration"], item["s"], item["m"], item["h"], item["d"])
+                    info["duration"])
 
                 if file_name not in os.listdir("downloads"):
                     item["on_start"][0](
@@ -89,7 +89,7 @@ def worker():
 threading.Thread(target=worker, daemon=True).start()
 
 
-def download(on_start, on_end, play_func, on_is_live_err, video, on_err, on_dur_limit, s, m, h, d):
+def download(on_start, on_end, play_func, on_is_live_err, video, on_err, on_dur_limit):
     q.put(
         {
             "on_start": on_start,
@@ -98,11 +98,7 @@ def download(on_start, on_end, play_func, on_is_live_err, video, on_err, on_dur_
             "on_is_live_err": on_is_live_err,
             "video": video,
             "on_err": on_err,
-            "on_dur_limit": on_dur_limit,
-            "s": s,
-            "m": m,
-            "h": h,
-            "d": d
+            "on_dur_limit": on_dur_limit
         }
     )
     return q.qsize()

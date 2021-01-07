@@ -2,12 +2,14 @@ from pyrogram import filters
 from pyrogram.handlers import MessageHandler
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 import player
-from config import SUDO_USERS, SUDO_FILTER, BANNED
+from helpers import wrap
+from config import SUDO_USERS, SUDO_FILTER
 from strings import get_string as _
 
 
-async def queue(client, message):
-    m = await message.reply_text("....", quote=True)
+@wrap
+def queue(client, message):
+    m = message.reply_text("....", quote=True)
     first_10 = player.q_list[:10]
     res = (_("queue_1") + "\n\n").format(
         len(first_10),
@@ -31,7 +33,7 @@ async def queue(client, message):
             ) + "\n"
 
     if message.from_user.id in SUDO_USERS:
-        await m.edit_text(
+        m.edit_text(
             res,
             disable_web_page_preview=True,
             reply_markup=InlineKeyboardMarkup(
@@ -54,7 +56,15 @@ async def queue(client, message):
             )
         )
     else:
-        await m.edit_text(res, disable_web_page_preview=True)
+        m.edit_text(res, disable_web_page_preview=True)
+
+
+def rmitem(client, message):
+    try:
+        del player.q_list[int(message.text.split()[1]) + 1]
+        message.reply_text(_("queue_3"))
+    except:
+        pass
 
 
 __handlers__ = [
@@ -62,7 +72,13 @@ __handlers__ = [
         MessageHandler(
             queue,
             filters.command("queue", "/")
-            & ~ BANNED
+        )
+    ],
+    [
+        MessageHandler(
+            rmitem,
+            filters.command("rmitem", "/")
+            & SUDO_FILTER
         )
     ]
 ]

@@ -3,23 +3,25 @@ from pyrogram.handlers import MessageHandler
 from helpers import is_youtube
 from ytdl import download
 import player
-from config import LOG_GROUP, BANNED
+from helpers import wrap
+from config import LOG_GROUP
 from strings import get_string as _
 
 
-async def message(client, message):
+@wrap
+def message(client, message):
     if message.text.startswith("/"):
         return
 
     if not is_youtube(message.text):
-        await message.reply_text(_("message_1"))
+        message.reply_text(_("message_1"))
         return
 
     if "list=" in message.text:
-        await message.reply_text(_("message_2"))
+        message.reply_text(_("message_2"))
         return
 
-    m = await message.reply_text(_("message_3"), quote=True)
+    m = message.reply_text(_("message_3"), quote=True)
 
     download(
         (
@@ -76,11 +78,7 @@ async def message(client, message):
         [
             m.edit,
             [_("ytdl_4"), ]
-        ],
-        _("seconds"),
-        _("minutes"),
-        _("hours"),
-        _("days")
+        ]
     )
 
 
@@ -91,7 +89,6 @@ __handlers__ = [
             filters.text
             & filters.private
             & ~ filters.regex(r"^x .+")
-            & ~ BANNED
         ),
         2
     ]

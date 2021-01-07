@@ -1,10 +1,12 @@
 from pyrogram import filters
 from pyrogram.handlers import MessageHandler
+from helpers import wrap
 from strings import get_string as _
 
 
-async def mistake(client, message):
-    await message.reply_text(_("mistake"))
+@wrap
+def mistake(client, message):
+    message.reply_text(_("mistake"))
 
 
 __handlers__ = [
